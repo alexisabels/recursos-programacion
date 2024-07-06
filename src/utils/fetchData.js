@@ -1,5 +1,3 @@
-// src/utils/fetchData.js
-
 /**
  * Fetch data from the specified API endpoint.
  * @param {string} endpoint - The API endpoint to fetch data from.
