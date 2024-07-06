@@ -1,73 +1,150 @@
 ---
-// Importa el layout y la función de obtención de datos
 import Layout from "../../layouts/Layout.astro";
 import { fetchData } from "../../utils/fetchData";
 
+const categoria = Astro.params.categoria;
 const tecnologia = Astro.params.tecnologia;
-const categoria = Astro.params.categoria; // Asumiendo que tienes el nombre de la categoría también
-const data = await fetchData(`categorias/${categoria}/${tecnologia}`);
+
+function normalizeString(str) {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9\-]/gi, "")
+    .replace(/-+/g, "-");
+}
+
+let data;
+try {
+  data = await fetchData(
+    `categorias/${normalizeString(categoria)}/${tecnologia}`
+  );
+} catch (error) {
+  console.error("Failed to fetch data:", error);
+}
+
+if (!data) {
+  data = {
+    nombre: "No Data Available",
+    imagen: "",
+    introduccion: {
+      descripcion: "No description available.",
+      importancia: "No importance information available.",
+    },
+    libros: [],
+    cheatSheets: [],
+    cursosOnline: [],
+    tutorialesArticulos: [],
+    videosEducativos: [],
+    proyectosPracticos: [],
+    recursosWeb: [],
+    comunidadesForos: [],
+  };
+}
+
+const sections = [
+  { id: "libros", title: "Libros", items: data.libros },
+  { id: "cheatSheets", title: "Cheat Sheets", items: data.cheatSheets },
+  { id: "cursosOnline", title: "Cursos Online", items: data.cursosOnline },
+  {
+    id: "tutorialesArticulos",
+    title: "Tutoriales y Artículos",
+    items: data.tutorialesArticulos,
+  },
+  {
+    id: "videosEducativos",
+    title: "Videos Educativos",
+    items: data.videosEducativos,
+  },
+  {
+    id: "proyectosPracticos",
+    title: "Proyectos Prácticos",
+    items: data.proyectosPracticos,
+  },
+  { id: "recursosWeb", title: "Recursos Web", items: data.recursosWeb },
+  {
+    id: "comunidadesForos",
+    title: "Comunidades y Foros",
+    items: data.comunidadesForos,
+  },
+];
 ---
 
 <Layout title={data.nombre}>
-  <h1>{data.nombre}</h1>
-  <p>{data.introduccion.descripcion}</p>
-  <h2>Importancia</h2>
-  <p>{data.introduccion.importancia}</p>
+  <div class="container mx-auto px-8 md:px-16 lg:px-24 xl:px-32 p-6 relative">
+    <a
+      href="/"
+      onclick="history.back()"
+      class="inline-flex items-center justify-center px-4 py-2 mb-4 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    >
+      Atrás
+    </a>
 
-  <h2>Libros Recomendados</h2>
-  <ul>
+    <div class="flex items-center mb-6">
+      <img
+        class="w-40 h-40 mr-6"
+        src={data.imagen}
+        alt={`Imagen de ${data.nombre}`}
+      />
+      <h1 class="text-5xl font-extrabold text-gray-800">
+        {data.nombre}
+      </h1>
+    </div>
+
+    <div class="text-lg text-gray-700 mb-12">
+      <p class="mb-4">{data.introduccion.descripcion}</p>
+      <p>{data.introduccion.importancia}</p>
+    </div>
+
+    <div class="mb-8">
+      <h2 class="text-3xl font-bold text-gray-800 mb-6">Contenido</h2>
+      <div class="flex space-x-4 mb-4">
+        {
+          sections.map((section) => (
+            <button
+              onclick={`document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden')); document.getElementById('${section.id}').classList.remove('hidden');`}
+              class="px-4 py-2 rounded-md text-white bg-gray-600 hover:bg-blue-700"
+            >
+              {section.title}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
     {
-      data.libros.map((libro) => (
-        <li>
-          <a href={libro.link}>{libro.titulo}</a> - {libro.descripcion}
-        </li>
+      sections.map((section) => (
+        <div
+          id={section.id}
+          class="section grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {section.items.map((item) => (
+            <div class="bg-white shadow-lg rounded-lg p-4">
+              <h3 class="text-xl font-semibold text-gray-800 mb-2">
+                {item.titulo}
+              </h3>
+              {item.descripcion && (
+                <p class="text-gray-600 mb-4">{item.descripcion}</p>
+              )}
+              <a
+                href={item.link}
+                class="text-blue-600 hover:underline"
+                target="_blank"
+              >
+                Ver más
+              </a>
+            </div>
+          ))}
+        </div>
       ))
     }
-  </ul>
 
-  <h2>Cursos Online</h2>
-  <ul>
-    {
-      data.cursosOnline.map((curso) => (
-        <li>
-          <a href={curso.link}>{curso.titulo}</a> - {curso.descripcion}
-        </li>
-      ))
-    }
-  </ul>
-
-  <h2>Videos Educativos</h2>
-  <ul>
-    {
-      data.videosEducativos.map((video) => (
-        <li>
-          <a href={video.link}>{video.titulo}</a>
-        </li>
-      ))
-    }
-  </ul>
-
-  <h2>Cheat Sheets</h2>
-  <ul>
-    {
-      data.cheatSheets.map((sheet) => (
-        <li>
-          <a href={sheet.link}>{sheet.titulo}</a>
-        </li>
-      ))
-    }
-  </ul>
-
-  <h2>Recursos Web</h2>
-  <ul>
-    {
-      data.recursosWeb.map((recurso) => (
-        <li>
-          <a href={recurso.link}>{recurso.titulo}</a>
-        </li>
-      ))
-    }
-  </ul>
-
-  <!-- Repetir para cada tipo de contenido como comunidadesForos, proyectosPracticos, etc. -->
+    <script>
+      document.querySelectorAll(".section").forEach((section, index) => {
+        if (index !== 0) section.classList.add("hidden");
+      });
+    </script>
+  </div>
 </Layout>

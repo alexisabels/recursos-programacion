@@ -18,22 +18,57 @@ const data = await fetchData(`categorias/${normalizeString(categoria)}`);
 ---
 
 <Layout title="Categoría">
-  <h1>{data.nombre}</h1>
-  <img src={data.imagen} alt={`Imagen de ${data.nombre}`} />
-  <p>{data.introduccion}</p>
-  <div>
-    {
-      data.lenguajes.map((lenguaje) => (
-        <a
-          href={`/${normalizeString(categoria)}/${normalizeString(lenguaje.nombre)}`}
-        >
-          <div>
-            <img src={lenguaje.imagen} alt={lenguaje.nombre} />
-            <h2>{lenguaje.nombre}</h2>
-            <p>{lenguaje.descripcion}</p>
-          </div>
-        </a>
-      ))
-    }
+  <div class="container mx-auto px-8 md:px-16 lg:px-24 xl:px-32 p-6 relative">
+    <a
+      href="/"
+      onclick="history.back()"
+      class="inline-flex items-center justify-center px-4 py-2 mb-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    >
+      Atrás
+    </a>
+
+    <div class="flex items-center mb-6">
+      <img
+        class="w-40 h-40 mr-6"
+        src={data.imagen}
+        alt={`Imagen de ${data.nombre}`}
+      />
+      <h1 class="text-5xl font-extrabold text-gray-800">
+        {data.nombre}
+      </h1>
+    </div>
+
+    <p class="text-lg text-gray-700 mb-12 text-center">{data.introduccion}</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      {
+        data.lenguajes.map((lenguaje) => (
+          <a
+            href={`/${normalizeString(categoria)}/${normalizeString(lenguaje.nombre)}`}
+            class="block bg-white shadow-lg rounded-lg overflow-hidden transition-transform transform hover:scale-105 hover:shadow-2xl"
+          >
+            <div class="flex flex-col h-full">
+              <div class="flex justify-center items-center bg-gray-100 p-4">
+                <img
+                  class="w-20 h-20 object-cover"
+                  src={lenguaje.imagen}
+                  alt={lenguaje.nombre}
+                />
+              </div>
+              <div class="p-4 flex flex-col flex-grow">
+                <h2 class="text-xl font-bold text-gray-800 mb-2 text-center">
+                  {lenguaje.nombre}
+                </h2>
+                <p class="text-gray-600 text-center">{lenguaje.descripcion}</p>
+              </div>
+              <div class="p-4">
+                <span class="bg-blue-600 text-white w-full block text-center py-2 rounded-full hover:bg-blue-700 transition">
+                  Explorar más
+                </span>
+              </div>
+            </div>
+          </a>
+        ))
+      }
+    </div>
   </div>
 </Layout>
