@@ -1,0 +1,39 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { fetchData } from "../utils/fetchData";
+
+const categoria = Astro.params.categoria;
+function normalizeString(str) {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9\-]/gi, "")
+    .replace(/-+/g, "-");
+}
+
+const data = await fetchData(`categorias/${normalizeString(categoria)}`);
+---
+
+<Layout title="Categoría">
+  <h1>{data.nombre}</h1>
+  <img src={data.imagen} alt={`Imagen de ${data.nombre}`} />
+  <p>{data.introduccion}</p>
+  <div>
+    {
+      data.lenguajes.map((lenguaje) => (
+        <a
+          href={`/${normalizeString(categoria)}/${normalizeString(lenguaje.nombre)}`}
+        >
+          <div>
+            <img src={lenguaje.imagen} alt={lenguaje.nombre} />
+            <h2>{lenguaje.nombre}</h2>
+            <p>{lenguaje.descripcion}</p>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+</Layout>
