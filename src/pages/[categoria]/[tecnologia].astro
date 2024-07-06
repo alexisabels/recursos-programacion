@@ -1,0 +1,73 @@
+---
+// Importa el layout y la función de obtención de datos
+import Layout from "../../layouts/Layout.astro";
+import { fetchData } from "../../utils/fetchData";
+
+const tecnologia = Astro.params.tecnologia;
+const categoria = Astro.params.categoria; // Asumiendo que tienes el nombre de la categoría también
+const data = await fetchData(`categorias/${categoria}/${tecnologia}`);
+---
+
+<Layout title={data.nombre}>
+  <h1>{data.nombre}</h1>
+  <p>{data.introduccion.descripcion}</p>
+  <h2>Importancia</h2>
+  <p>{data.introduccion.importancia}</p>
+
+  <h2>Libros Recomendados</h2>
+  <ul>
+    {
+      data.libros.map((libro) => (
+        <li>
+          <a href={libro.link}>{libro.titulo}</a> - {libro.descripcion}
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2>Cursos Online</h2>
+  <ul>
+    {
+      data.cursosOnline.map((curso) => (
+        <li>
+          <a href={curso.link}>{curso.titulo}</a> - {curso.descripcion}
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2>Videos Educativos</h2>
+  <ul>
+    {
+      data.videosEducativos.map((video) => (
+        <li>
+          <a href={video.link}>{video.titulo}</a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2>Cheat Sheets</h2>
+  <ul>
+    {
+      data.cheatSheets.map((sheet) => (
+        <li>
+          <a href={sheet.link}>{sheet.titulo}</a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2>Recursos Web</h2>
+  <ul>
+    {
+      data.recursosWeb.map((recurso) => (
+        <li>
+          <a href={recurso.link}>{recurso.titulo}</a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <!-- Repetir para cada tipo de contenido como comunidadesForos, proyectosPracticos, etc. -->
+</Layout>
